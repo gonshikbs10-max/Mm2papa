@@ -11,7 +11,6 @@ local cfg = {
     autoFarm = false, bunny = false, shaders = false, killAura = false,
     antiFling = false, autoGrab = false
 }
-local hold = false
 
 -- ===== DRAG =====
 local dragging, dragInput, dragStart, startPos
@@ -150,7 +149,6 @@ local function getRole(p)
     return "Innocent"
 end
 
--- АИМ ВСЕГДА ВИДИТ МАРДЕРА (Ищет нож в инвентаре/руках, если нет - берет ближайшего)
 local function findTarget(filterRole)
     local closest, dist = nil, cfg.aimFOV
     local center = Vector2.new(C.ViewportSize.X/2, C.ViewportSize.Y/2)
@@ -172,7 +170,6 @@ local function findTarget(filterRole)
     return closest
 end
 
--- ФЛИНГ БЕЗ ТАЧА
 local function doFling(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
     local hrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -188,7 +185,7 @@ addToggle("Role ESP (All)", "esp")
 addToggle("Aimbot (Murderer)", "aim")
 addToggle("Kill Aura", "killAura")
 addToggle("Auto Farm", "autoFarm")
-addToggle("BunnyHop", "bunny")
+addToggle("BunnyHop (Hold Jump)", "bunny")
 addToggle("Auto Grab Gun", "autoGrab")
 addToggle("Shaders", "shaders", function(on)
     if on then L.Brightness = 2; L.EnvironmentDiffuseScale = 0.5; L.GlobalShadows = true else L.Brightness = 1; L.EnvironmentDiffuseScale = 0; L.GlobalShadows = false end
@@ -235,7 +232,11 @@ local function applySkin(tool, isKnife)
     if isKnife then mesh.MeshId = "rbxassetid://6094373434"; mesh.TextureId = "rbxassetid://6094373438" 
     else mesh.MeshId = "rbxassetid://132576701"; mesh.TextureId = "rbxassetid://132576704" end
 end
-LP.CharacterAdded:Connect(function(c) for _, t in ipairs(c:GetChildren()) do if t.Name == "Knife" then applySkin(t, true) elseif t.Name == "Gun" then applySkin(t, false) end end end)
+LP.CharacterAdded:Connect(function(c) 
+    for _, t in ipairs(c:GetChildren()) do 
+        if t.Name == "Knife" then applySkin(t, true) elseif t.Name == "Gun" then applySkin(t, false) end 
+    end 
+end)
 
 -- ===== MAIN LOOP =====
 R.RenderStepped:Connect(function()
@@ -254,7 +255,7 @@ R.RenderStepped:Connect(function()
         end
     end
 
-    -- AIM (ShiftLock)
+    -- AIM
     local hum = LP.Character and LP.Character:FindFirstChildOfClass("Humanoid")
     local shift = hum and math.abs(hum.CameraOffset.Z) > 0.01
     if cfg.aim and shift then
@@ -281,10 +282,10 @@ R.RenderStepped:Connect(function()
         end
     end
 
-    -- BUNNYHOP (Hold Space/Jump)
+    -- BUNNYHOP
     if cfg.bunny and hum and U:IsKeyDown(Enum.KeyCode.Space) then
         if hum.FloorMaterial ~= Enum.Material.Air then hum.Jump = true end
     end
 end)
 
-print("PAPA SCRIPT MM2 v5 
+print("PAPA SCRIPT MM2 v5 loaded")
