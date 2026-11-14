@@ -1,4 +1,4 @@
--- PAPA SCRIPT MM2 v10
+-- PAPA SCRIPT MM2 v11
 local P = game:GetService("Players")
 local R = game:GetService("RunService")
 local U = game:GetService("UserInputService")
@@ -6,7 +6,7 @@ local LP = P.LocalPlayer
 local C = workspace.CurrentCamera
 
 local cfg = {
-    esp = true, aim = true, autoShoot = false, fling = false, bunny = false
+    esp = true, aim = true, autoShoot = false, fling = false
 }
 
 -- UI
@@ -20,7 +20,7 @@ icon.Image = "rbxassetid://118814584997415"; icon.Parent = g
 Instance.new("UICorner", icon).CornerRadius = UDim.new(1, 0)
 
 local menu = Instance.new("Frame", g)
-menu.Size = UDim2.new(0, 180, 0, 220); menu.Position = UDim2.new(0.5, -90, 0.5, -110)
+menu.Size = UDim2.new(0, 180, 0, 200); menu.Position = UDim2.new(0.5, -90, 0.5, -100)
 menu.BackgroundColor3 = Color3.fromRGB(15, 15, 18); menu.Visible = false; menu.Parent = g
 Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 8)
 
@@ -80,7 +80,7 @@ R:BindToRenderStep("PAPA_AIM", Enum.RenderPriority.Camera.Value + 1, function()
     end
 end)
 
--- AUTO SHOOT (ТОЛЬКО В МАРДЕРА)
+-- AUTO SHOOT
 R.Heartbeat:Connect(function()
     if cfg.autoShoot then
         local char = LP.Character
@@ -94,19 +94,16 @@ R.Heartbeat:Connect(function()
     end
 end)
 
--- FLING (ФИЗИКА)
+-- FLING (ФИКС: БЕЗ ПОЛЕТА ТЕБЯ, ТОЛЬКО ЦЕЛИ)
 R.Heartbeat:Connect(function()
     local myHRP = LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
     if myHRP and cfg.fling then
-        -- Вращаем себя для импульса
-        myHRP.AssemblyAngularVelocity = Vector3.new(0, 1000, 0)
-        
-        -- При касании других - отлетают
         for _, p in ipairs(P:GetPlayers()) do
             if p ~= LP and p.Character then
                 local hrp = p.Character:FindFirstChild("HumanoidRootPart")
-                if hrp and (hrp.Position - myHRP.Position).Magnitude < 10 then
-                    hrp.AssemblyLinearVelocity = Vector3.new(math.random(-500,500), 5000, math.random(-500,500))
+                if hrp and (hrp.Position - myHRP.Position).Magnitude < 15 then
+                    -- Кидаем ТОЛЬКО цель
+                    hrp.AssemblyLinearVelocity = Vector3.new(math.random(-1000,1000), 5000, math.random(-1000,1000))
                 end
             end
         end
@@ -132,6 +129,6 @@ end)
 addToggle("ESP", "esp")
 addToggle("Aimbot", "aim")
 addToggle("Auto Shoot (Murder)", "autoShoot")
-addToggle("Fling (Physics)", "fling")
+addToggle("Fling (Touch)", "fling")
 
-print("PAPA SCRIPT v10 loaded")
+print("PAPA SCRIPT v11 loaded")
